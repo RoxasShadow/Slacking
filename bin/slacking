@@ -1,0 +1,55 @@
+#!/usr/bin/env ruby
+##########################################################################
+#    Giovanni Capuano <webmaster@giovannicapuano.net>
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+##########################################################################
+require 'slacking'
+
+config_file_name = ARGV.length > 1 ? ARGV[1] : '/home/giovanni/Scrivania/Slacking/bin/config'
+abort 'config not found' if !File.exists? config_file_name
+
+datas = {}
+config_file = File.open(config_file_name, 'r') { |file|
+	while line = file.gets
+		next if line[0] == '#'
+		ary = line.split('=>')
+		config = ary[1].split(':')
+		datas[ary[0].to_sym] = config.each { |elm| elm.strip! }
+	end
+}
+
+abort 'No message to send.' if ARGV.length == 0
+message = ARGV[0]
+length = message.length
+max = 140
+
+##### NERDZ
+username = datas[:nerdz][0]
+password = datas[:nerdz][1]
+nerdz = NerdzSender.new
+id = nerdz.get_id(username)
+
+abort 'ID obtaining failed.' if !id
+abort 'Login failed.'        if !nerdz.login(username, password)
+puts nerdz.nerdz_it(message, id) ? 'Nerdz sent successfully.' : 'Nerdz sending failed.'
+
+##### TWITTER
+consumer_key = datas[:twitter][0]
+consumer_secret = datas[:twitter][1]
+oauth_token = datas[:twitter][2]
+oauth_token_secret = datas[:twitter][3]
+
+abort "Message too long (#{length}). Max #{max} characters." if length > 140
+TwitterSender.new(consumer_key, consumer_secret, oauth_token, oauth_token_secret).tweet(message).to_s
+puts 'Tweet (maybe) sent successfully.'

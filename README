@@ -1,0 +1,11 @@
+Slaking. An app for lazy guys. An app for me. You give it a message, and it will share it everywhere.
+
+twitter tokens => http://dev.twitter.com/apps
+	Create a new application (fill Name, Description, Website how you want, leave Callback URL blank);
+	Accept the terms, compile captcha and create the application;
+	In your application page, go to Settings tab and check Read and Write checkbox and update the new settings;
+	In Details tab create new token clicking the button;
+	Copy the relative tokens.
+
+nerdz=>username:password
+twitter=>consumer_key:consumer_secret:oauth_token:oauth_token_secret
