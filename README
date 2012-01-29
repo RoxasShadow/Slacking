@@ -1,4 +1,6 @@
 Slacking. An app for lazy guys. An app for me. You give it a message, and it will share it everywhere.
+Copy bin/config where you want, and copy its path in the 19th row of bin/slacking
+Then, edit the config file following these tips.
 
 twitter tokens => http://dev.twitter.com/apps
 	Create a new application (fill Name, Description, Website how you want, leave Callback URL blank);
@@ -17,3 +19,6 @@ facebook tokens
 nerdz=>username:password
 twitter=>consumer_key:consumer_secret:oauth_token:oauth_token_secret
 facebook=>app_code:access_token
+
+USAGE: slacking "Hi :D #slacking"
+	[OPTIONS] --no-nerdz --no-facebook --no-twitter
