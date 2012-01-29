@@ -86,7 +86,7 @@ def facebook(datas, message)
 	expires = token[:expires]
 
 	begin
-		Slacking::Facebook.new(access_token).post(message).to_s
+		Slacking::Facebook.new(access_token).post(message)
 	rescue; end
 	puts 'Facebook: Post (maybe) sent successfully.'
 end
