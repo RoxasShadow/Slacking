@@ -14,8 +14,9 @@ facebook tokens
 	When Slacking gives you the link to Facebook, open it in a web browser;
 	The URL of the page will be similar to "https://www.facebook.com/connect/login_success.html#access_token=LONGCODE";
 	Paste LONGCODE in Slacking to send a post to Facebook;
-	In order to not paste LONGCODE in each Slacking session, copy it in config file `facebook=>APP_CODE:LONGCODE` (you can leave default APP_CODE);
-	If you have problems with the Facebook post sending in Slacking, LONGCODE can be expired: Repeat the procedure.
+	In order to not paste LONGCODE in each Slacking session, copy it in config file `facebook=>APP_CODE:LONGCODE`;
+	If you have problems with the Facebook post sending in Slacking, LONGCODE can be expired: Repeat the procedure;
+	As APP_ID you can use whatever Facebook app with r/w permission you want, but I suggest you 179745182062082.
 
 nerdz=>username:password
 twitter=>consumer_key:consumer_secret:oauth_token:oauth_token_secret
