@@ -35,21 +35,35 @@ length = message.length
 max = 140
 
 ##### NERDZ
+abort 'No config for nerdz.' if datas[:nerdz] == nil
 username = datas[:nerdz][0]
 password = datas[:nerdz][1]
-nerdz = NerdzSender.new
-id = nerdz.get_id(username)
+nerdz = Slacking::Nerdz.new
 
-abort 'ID obtaining failed.' if !id
-abort 'Login failed.'        if !nerdz.login(username, password)
-puts nerdz.nerdz_it(message, id) ? 'Nerdz sent successfully.' : 'Nerdz sending failed.'
+res = nerdz.login(username, password)
+abort "Login failed. \##{res[1]}" if !res[0]
+
+res = nerdz.get_id(username)
+if res[0]
+	id = res[2]
+else
+	abort "ID obtaining failed. \##{res[1]}" if !res[0]
+end
+
+res = nerdz.nerdz_it(message, id)
+if res[0]
+	puts 'Nerdz sent successfully.'
+else
+	abort "Login failed. \##{res[1]}"
+end
 
 ##### TWITTER
+abort 'No config for twitter.' if datas[:twitter] == nil
 consumer_key = datas[:twitter][0]
 consumer_secret = datas[:twitter][1]
 oauth_token = datas[:twitter][2]
 oauth_token_secret = datas[:twitter][3]
 
 abort "Message too long (#{length}). Max #{max} characters." if length > 140
-TwitterSender.new(consumer_key, consumer_secret, oauth_token, oauth_token_secret).tweet(message).to_s
+Slacking::Twitter.new(consumer_key, consumer_secret, oauth_token, oauth_token_secret).tweet(message).to_s
 puts 'Tweet (maybe) sent successfully.'

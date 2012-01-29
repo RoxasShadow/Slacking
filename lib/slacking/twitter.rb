@@ -15,9 +15,10 @@
 ##########################################################################
 require 'twitter'
 
-class TwitterSender
+module Slacking
+class Twitter
 	def initialize(consumer_key, consumer_secret, oauth_token, oauth_token_secret)
-		Twitter.configure do |config|
+		Twitter::Twitter.configure do |config|
 			config.consumer_key = consumer_key
 			config.consumer_secret = consumer_secret
 			config.oauth_token = oauth_token
@@ -26,6 +27,7 @@ class TwitterSender
 	end
 	
 	def tweet(msg)
-		Twitter.update(msg)
+		Twitter::Twitter.update(msg)
 	end
+end
 end

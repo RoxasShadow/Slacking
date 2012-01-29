@@ -25,21 +25,25 @@ require 'json/stream'
 #	end
 #end
 
-class NerdzSender
+module Slacking
+class Nerdz
 	def initialize
 		@cookies = {}
 	end
 	
 	def login(username, password)
-		request('login', "username=#{username}&password=#{password}")['error'] == 0
+		res = request('login', "username=#{username}&password=#{password}")
+		[ res['error'] == 0, res['error'] ]
 	end
 	
 	def get_id(username)
-		request('get_id', "username=#{username}")['id'].to_i >= 0
+		res = request('get_id', "username=#{username}")
+		[ res['id'].to_i > 0, res['error'], res['id'] ]
 	end
 	
 	def nerdz_it(message, to)
-		request('nerdz_it', "message=#{message}&to=#{to}")['error'] == 0
+		res = request('nerdz_it', "message=#{message}&to=#{to}")
+		[ res['error'] == 0, res['error'] ]
 	end
 	
 	def request(action, post)
@@ -49,4 +53,5 @@ class NerdzSender
 			JSON::Stream::Parser.parse(res.body)
 		}
 	end		
+end
 end
