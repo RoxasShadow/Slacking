@@ -15,3 +15,21 @@
 ##########################################################################
 require 'slacking/nerdz'
 require 'slacking/twitter'
+require 'slacking/facebook'
+
+module Slacking
+class Slacking
+	def Slacking.get_config(config_file_name)
+		datas = {}
+		config_file = File.open(config_file_name, 'r') { |file|
+			while line = file.gets
+				next if line[0] == '#'
+				ary = line.split('=>')
+				config = ary[1].split(':')
+				datas[ary[0].to_sym] = config.each { |elm| elm.strip! }
+			end
+		}
+		datas
+	end
+end
+end

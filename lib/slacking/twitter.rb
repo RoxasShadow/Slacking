@@ -26,7 +26,7 @@ class Twitter
 		end
 	end
 	
-	def tweet(msg)
+	def post(msg)
 		Twitter::Twitter.update(msg)
 	end
 end

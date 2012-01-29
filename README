@@ -1,4 +1,4 @@
-Slaking. An app for lazy guys. An app for me. You give it a message, and it will share it everywhere.
+Slacking. An app for lazy guys. An app for me. You give it a message, and it will share it everywhere.
 
 twitter tokens => http://dev.twitter.com/apps
 	Create a new application (fill Name, Description, Website how you want, leave Callback URL blank);
@@ -6,6 +6,14 @@ twitter tokens => http://dev.twitter.com/apps
 	In your application page, go to Settings tab and check Read and Write checkbox and update the new settings;
 	In Details tab create new token clicking the button;
 	Copy the relative tokens.
+	
+facebook tokens
+	When Slacking gives you the link to Facebook, open it in a web browser;
+	The URL of the page will be similar to "https://www.facebook.com/connect/login_success.html#access_token=LONGCODE";
+	Paste LONGCODE in Slacking to send a post to Facebook;
+	In order to not paste LONGCODE in each Slacking session, copy it in config file `facebook=>APP_CODE:LONGCODE` (you can leave default APP_CODE);
+	If you have problems with the Facebook post sending in Slacking, LONGCODE can be expired: Repeat the procedure.
 
 nerdz=>username:password
 twitter=>consumer_key:consumer_secret:oauth_token:oauth_token_secret
+facebook=>app_code:access_token

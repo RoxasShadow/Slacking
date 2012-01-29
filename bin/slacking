@@ -16,54 +16,81 @@
 ##########################################################################
 require 'slacking'
 
-config_file_name = ARGV.length > 1 ? ARGV[1] : '/home/giovanni/Scrivania/Slacking/bin/config'
+config_file_name = '/home/giovanni/Scrivania/Slacking/bin/config'
 abort 'config not found' if !File.exists? config_file_name
-
-datas = {}
-config_file = File.open(config_file_name, 'r') { |file|
-	while line = file.gets
-		next if line[0] == '#'
-		ary = line.split('=>')
-		config = ary[1].split(':')
-		datas[ary[0].to_sym] = config.each { |elm| elm.strip! }
-	end
-}
+datas = Slacking::Slacking.get_config(config_file_name)
 
 abort 'No message to send.' if ARGV.length == 0
 message = ARGV[0]
-length = message.length
-max = 140
 
-##### NERDZ
-abort 'No config for nerdz.' if datas[:nerdz] == nil
-username = datas[:nerdz][0]
-password = datas[:nerdz][1]
-nerdz = Slacking::Nerdz.new
+exc = {}
+exc[:nerdz] = exc[:twitter] = exc[:facebook] = true
+ARGV.each { |argv, i|
+	next if i == 0
+	exc[:nerdz] = false if argv == '--no-nerdz'
+	exc[:twitter] = false if argv == '--no-twitter'
+	exc[:facebook] = false if argv == '--no-facebook'
+}
 
-res = nerdz.login(username, password)
-abort "Login failed. \##{res[1]}" if !res[0]
+def nerdz(datas, message)
+	abort 'No config for nerdz.' if datas[:nerdz] == nil
+	username = datas[:nerdz][0]
+	password = datas[:nerdz][1]
+	nerdz = Slacking::Nerdz.new
 
-res = nerdz.get_id(username)
-if res[0]
-	id = res[2]
-else
-	abort "ID obtaining failed. \##{res[1]}" if !res[0]
+	res = nerdz.login(username, password)
+	abort "Nerdz: Login failed. \##{res[1]}" if !res[0]
+
+	res = nerdz.get_id(username)
+	if res[0]
+		id = res[2]
+	else
+		abort "Nerdz: ID obtaining failed. \##{res[1]}" if !res[0]
+	end
+
+	res = nerdz.post(message, id)
+	if res[0]
+		puts 'Nerdz: Post sent successfully.'
+	else
+		abort "Nerdz: Login failed. \##{res[1]}"
+	end
 end
 
-res = nerdz.nerdz_it(message, id)
-if res[0]
-	puts 'Nerdz sent successfully.'
-else
-	abort "Login failed. \##{res[1]}"
+def twitter(datas, message)
+	abort 'No config for twitter.' if datas[:twitter] == nil
+	consumer_key = datas[:twitter][0]
+	consumer_secret = datas[:twitter][1]
+	oauth_token = datas[:twitter][2]
+	oauth_token_secret = datas[:twitter][3]
+	
+	abort "Twitter: Message too long (#{message.length}). Max 140 characters." if message.length > 140
+	begin
+		Slacking::Twitter.new(consumer_key, consumer_secret, oauth_token, oauth_token_secret).post(message).to_s
+	rescue; end
+	puts 'Twitter: Post (maybe) sent successfully.'
 end
 
-##### TWITTER
-abort 'No config for twitter.' if datas[:twitter] == nil
-consumer_key = datas[:twitter][0]
-consumer_secret = datas[:twitter][1]
-oauth_token = datas[:twitter][2]
-oauth_token_secret = datas[:twitter][3]
+def facebook(datas, message)
+	abort 'No config for facebook.' if datas[:facebook] == nil
+	app_id = datas[:facebook][0]
+	input_token = datas[:facebook][1]
+	
+	if input_token == nil
+		url = Slacking::Facebook.get_url(app_id)
+		puts "Facebook: Open...\n#{url}\n...and copy&paste here the code= url param"
+		input_token = STDIN.gets.chomp
+	end
+	
+	token = Slacking::Facebook.get_token(input_token)
+	access_token = token[:access_token]
+	expires = token[:expires]
 
-abort "Message too long (#{length}). Max #{max} characters." if length > 140
-Slacking::Twitter.new(consumer_key, consumer_secret, oauth_token, oauth_token_secret).tweet(message).to_s
-puts 'Tweet (maybe) sent successfully.'
+	begin
+		Slacking::Facebook.new(access_token).post(message).to_s
+	rescue; end
+	puts 'Facebook: Post (maybe) sent successfully.'
+end
+
+nerdz(datas, message) if exc[:nerdz]
+twitter(datas, message) if exc[:twitter]
+facebook(datas, message) if exc[:facebook]

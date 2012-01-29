@@ -41,7 +41,7 @@ class Nerdz
 		[ res['id'].to_i > 0, res['error'], res['id'] ]
 	end
 	
-	def nerdz_it(message, to)
+	def post(message, to)
 		res = request('nerdz_it', "message=#{message}&to=#{to}")
 		[ res['error'] == 0, res['error'] ]
 	end

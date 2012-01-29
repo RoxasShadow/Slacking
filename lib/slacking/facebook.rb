@@ -13,8 +13,30 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##########################################################################
-class Slacking
-	def self.version
-		'0.2'
+require 'koala'
+
+module Slacking
+class Facebook
+	attr_reader :fb
+	
+	def initialize(access_token)
+		@fb = Koala::Facebook::API.new(access_token)
 	end
+	
+	def post(msg)
+		@fb.put_wall_post(msg)
+	end
+	
+	def Facebook.get_url(app_id)
+		"https://www.facebook.com/dialog/oauth?client_id=#{app_id}&redirect_uri=https://www.facebook.com/connect/login_success.html&response_type=token&scope="
+	end
+	
+	def Facebook.get_token(token)
+		ary = token.split('&')
+		h = {}
+		h[:access_token] = ary[0]
+		h[:expires] = ary[1]
+		h
+	end
+end
 end
