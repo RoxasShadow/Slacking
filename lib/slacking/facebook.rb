@@ -28,15 +28,12 @@ class Facebook
 	end
 	
 	def Facebook.get_url(app_id)
-		"https://www.facebook.com/dialog/oauth?client_id=#{app_id}&redirect_uri=https://www.facebook.com/connect/login_success.html&response_type=token&scope="
+		"https://www.facebook.com/dialog/permissions.request?app_id=#{app_id}&display=page&next=https://www.facebook.com/connect/login_success.html&response_type=token&fbconnect=1&perms=publish_stream"
 	end
 	
 	def Facebook.get_token(token)
 		ary = token.split('&')
-		h = {}
-		h[:access_token] = ary[0]
-		h[:expires] = ary[1]
-		h
+		{ :access_token => ary[0], :expires => ary[1] }
 	end
 end
 end
