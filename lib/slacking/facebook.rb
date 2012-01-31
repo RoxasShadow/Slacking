@@ -16,9 +16,7 @@
 require 'koala'
 
 module Slacking
-class Facebook
-	attr_reader :fb
-	
+class Facebook	
 	def initialize(access_token)
 		@fb = Koala::Facebook::API.new(access_token)
 	end

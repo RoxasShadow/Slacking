@@ -21,15 +21,17 @@ abort 'config not found' if !File.exists? config_file_name
 datas = Slacking::Slacking.get_config(config_file_name)
 
 abort 'No message to send.' if ARGV.length == 0
-message = ARGV[0]
+message = ARGV[0]; ARGV.delete_at(0)
+$debug = datas[:debug] != nil && datas[:debug][0] == 'yes' ? true : false
 
 exc = {}
 exc[:nerdz] = exc[:twitter] = exc[:facebook] = true
-ARGV.each { |argv, i|
-	next if i == 0
-	exc[:nerdz] = false if argv == '--no-nerdz'
-	exc[:twitter] = false if argv == '--no-twitter'
-	exc[:facebook] = false if argv == '--no-facebook'
+((ARGV + datas[:options]).uniq.compact).each { |opt|
+	case opt
+		when '--no-nerdz' then exc[:nerdz] = false
+		when '--no-twitter' then exc[:twitter] = false
+		when '--no-facebook' then exc[:facebook] = false
+	end
 }
 
 def nerdz(datas, message)
@@ -50,9 +52,9 @@ def nerdz(datas, message)
 
 	res = nerdz.post(message, id)
 	if res[0]
-		puts 'Nerdz: Post sent successfully.'
+		puts "\tNerdz: Post sent successfully."
 	else
-		abort "Nerdz: Login failed. \##{res[1]}"
+		abort "\tNerdz: Error while sending the post. (\##{res[1]})"
 	end
 end
 
@@ -65,9 +67,11 @@ def twitter(datas, message)
 	
 	abort "Twitter: Message too long (#{message.length}). Max 140 characters." if message.length > 140
 	begin
-		Slacking::Twitter.new(consumer_key, consumer_secret, oauth_token, oauth_token_secret).post(message).to_s
-	rescue; end
-	puts 'Twitter: Post (maybe) sent successfully.'
+		Slacking::Twitter.new(consumer_key, consumer_secret, oauth_token, oauth_token_secret).post(message)
+	rescue Exception => e
+		puts "Twitter: Error: #{e.class} => #{e}" if $debug
+	end
+	puts "\tTwitter: Post (maybe) sent successfully."
 end
 
 def facebook(datas, message)
@@ -87,8 +91,10 @@ def facebook(datas, message)
 
 	begin
 		Slacking::Facebook.new(access_token).post(message)
-	rescue; end
-	puts 'Facebook: Post (maybe) sent successfully.'
+	rescue Exception => e
+		puts "Facebook: Error: #{e.class} => #{e}" if $debug
+	end
+	puts "\tFacebook: Post (maybe) sent successfully."
 end
 
 nerdz(datas, message) if exc[:nerdz]

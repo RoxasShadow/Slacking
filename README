@@ -21,6 +21,14 @@ facebook tokens
 nerdz=>username:password
 twitter=>consumer_key:consumer_secret:oauth_token:oauth_token_secret
 facebook=>app_code:access_token
+debug=>yes
+options=>--no-nerdz:--no-twitter
+
+other ways
+	debug=>not
+	options=>
+	options=>--no-nerdz
+config options will be overriden by eventually command line options (as the follow)
 
 USAGE: slacking "Hi :D #slacking"
 	[OPTIONS] --no-nerdz --no-facebook --no-twitter
